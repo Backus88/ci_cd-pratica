@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      -6001:5432
+    env_file:
+      - .env
+    volumes:
+      - pg:/var/lib/postgresql/data
+
+  db_test:
+    image: postgres
+    container_name: db_test
+    restart: always
+    ports:
+      -6002:5432
+    env_file:
+      - .env.test
+    volumes:
+      - pg:/var/lib/postgresql/data_test
+
+  node:
+    container_name: server
+    build: .
+    ports:
+      - 5001:5000
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      pg:
+  
+  node_test:
+    container_name: server_test
+    build: .
+    ports:
+      - 5002:5000
+    depends_on:
+      - db_test
+    env_file:
+      - .env.test
+    volumes:
+      pg:
